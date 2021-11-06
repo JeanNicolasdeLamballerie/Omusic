@@ -19,3 +19,8 @@ samples, guidance on mobile development, and a full API reference.
 ## Libs
 
 [Audio player](https://pub.dev/packages/just_audio)
+
+## Links TODO 
+ followed : https://medium.com/@joshua.akers/storing-hive-encryption-keys-in-flutter-47a7c037d637
+ todo : add keychain support (macOs) https://developer.apple.com/documentation/security/keychain_services/keychain_items/sharing_access_to_keychain_items_among_a_collection_of_apps
+ todo : https://flutter.dev/desktop#entitlements-and-the-app-sandbox
