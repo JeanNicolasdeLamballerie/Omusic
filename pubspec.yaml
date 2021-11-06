@@ -27,6 +27,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  just_audio: any # substitute version number
+  just_audio_libwinmedia: any # substitute version number
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  
   flutter:
     sdk: flutter
 
@@ -34,8 +39,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  biometric_storage: ^3.0.1
 
 dev_dependencies:
+  hive_generator: ^1.1.1
+  build_runner: ^2.1.4
   flutter_test:
     sdk: flutter
 
