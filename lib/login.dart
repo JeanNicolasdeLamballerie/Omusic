@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:biometric_storage/biometric_storage.dart';
+import 'package:omusic/login_provider.dart';
 //~ Init & logic
 
 retrieveKey() async {
@@ -48,6 +49,7 @@ retrieveKey() async {
     //todo init login
   } else {
     // todo login
+
   }
 
   return encryptedBox;
@@ -127,8 +129,7 @@ class LoginWidget extends StatefulWidget {
 class _LoginWidgetState extends State<LoginWidget> {
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: onPressed, child: const Text("Success story"));
+    return const SignIn();
   }
 
   onPressed() {
@@ -147,6 +148,6 @@ class WidgetB extends StatelessWidget {
   Widget build(BuildContext context) {
     final LoginWrapperState state = LoginWrapper.of(context,
         build: false); // Uses ancestor instead of current > see doc
-    return Text(state.gToken);
+    return Text(state.gToken.toString());
   }
 }

@@ -7,9 +7,9 @@ class InheritedSongWrapper extends StatefulWidget {
   static InheritedSongWrapperState of(BuildContext context,
       {bool build = true}) {
     return build
-        ? context.dependOnInheritedWidgetOfExactType<InheritedLogin>()!.data
+        ? context.dependOnInheritedWidgetOfExactType<InheritedSong>()!.data
         : context
-            .findAncestorWidgetOfExactType<InheritedLogin>()!
+            .findAncestorWidgetOfExactType<InheritedSong>()!
             .data; // If we don't want to rebuild the current widget, we can pass StaticWrapper = InheritedSongWrapper.of(context, false); only using the original data passed down
   }
 
@@ -29,14 +29,14 @@ class InheritedSongWrapperState extends State<InheritedSongWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    print("building widget InheritedLogin ");
+    print("building widget InheritedSong ");
     print(name);
-    return InheritedLogin(inheritedChild: widget.child, data: this, name: name);
+    return InheritedSong(inheritedChild: widget.child, data: this, name: name);
   }
 }
 
-class InheritedLogin extends InheritedWidget {
-  const InheritedLogin(
+class InheritedSong extends InheritedWidget {
+  const InheritedSong(
       {Key? key,
       required this.inheritedChild,
       required this.data,
@@ -46,7 +46,7 @@ class InheritedLogin extends InheritedWidget {
   final String name;
   final InheritedSongWrapperState data;
   @override
-  bool updateShouldNotify(InheritedLogin oldWidget) {
+  bool updateShouldNotify(InheritedSong oldWidget) {
     return name != oldWidget.name;
   }
 

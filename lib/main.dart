@@ -10,9 +10,10 @@ import 'package:omusic/login.dart';
 
 //? If trying to compile in Ubuntu, you need to install the libsecret-1-dev package before executing flutter run. This is a requirement for compiling biometric_storage.
 dynamic encryptedBox;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); //~is it still necessary ? To test;
-  encryptedBox = await retrieveKey();
+  //encryptedBox = await retrieveKey();
   runApp(const MyApp());
 }
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: "O'Music",
       theme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.teal,
@@ -99,7 +100,11 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
-          child: Column(
+          child:
+              // SizedBox(
+              //   height: 700.0,
+              //child:
+              Column(
             // Column is also a layout widget. It takes a list of children and
             // arranges them vertically. By default, it sizes itself to fit its
             // children horizontally, and tries to be as tall as its parent.
@@ -116,11 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
             // horizontal).
             mainAxisAlignment: MainAxisAlignment.center,
             children: const <Widget>[
-              Text(
-                'Play music',
-              ),
               //Text(InheritedSongWrapper.of(context).name),
-              WidgetA(),
+              Expanded(child: LoginWidget()),
+              // Column(children: const <Widget>[]),
               // ElevatedButton(
               //     onPressed: () => InheritedSongWrapper.of(context)
               //         .changeSongName("newName"),
@@ -129,6 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
+        // ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _changeSong('newName'), //_incrementCounter,
           tooltip: 'Search',
