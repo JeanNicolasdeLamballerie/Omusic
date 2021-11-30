@@ -32,8 +32,14 @@ TBD
 ## **Links TODO**
 to implement : [adaptive_theme](https://pub.dev/packages/adaptive_theme)
 
+TODO : 
+- [appBar buttons](https://api.flutter.dev/flutter/material/AppBar-class.html)
+- [Examples : Cookbook on Navigation](https://docs.flutter.dev/cookbook/navigation)
+- [Navigator stack](https://api.flutter.dev/flutter/widgets/Navigator-class.html)
+- [MaterialPageRoutes(linked w/ navigator)](https://api.flutter.dev/flutter/material/MaterialPageRoute-class.html)
+- [basic data fetching](https://docs.flutter.dev/cookbook/networking/fetch-data)
 
- followed : https://medium.com/@joshua.akers/storing-hive-encryption-keys-in-flutter-47a7c037d637
+ followed for encryption : https://medium.com/@joshua.akers/storing-hive-encryption-keys-in-flutter-47a7c037d637
 
  todo : add keychain support (macOs) https://developer.apple.com/documentation/security/keychain_services/keychain_items/sharing_access_to_keychain_items_among_a_collection_of_apps
  
