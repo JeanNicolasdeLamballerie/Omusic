@@ -22,42 +22,7 @@ class RoutingAppBarState extends State<RoutingAppBar> {
           title: Text(widget.current,
               style: Theme.of(context).appBarTheme.titleTextStyle),
         ),
-        body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child:
-              // SizedBox(
-              //   height: 700.0,
-              //child:
-              Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Invoke "debug painting" (press "p" in the console, choose the
-            // "Toggle Debug Paint" action from the Flutter Inspector in Android
-            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-            // to see the wireframe for each widget.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const <Widget>[
-              //Text(InheritedSongWrapper.of(context).name),
-              Expanded(child: LoginWidget()),
-              // Column(children: const <Widget>[]),
-              // ElevatedButton(
-              //     onPressed: () => InheritedSongWrapper.of(context)
-              //         .changeSongName("newName"),
-              //     child: const Text("Hello World"))
-              //  style: Theme.of(context).textTheme.headline4,
-            ],
-          ),
-        ),
-        // ),
+        body: widget.child,
         floatingActionButton: FloatingActionButton(
           onPressed: () => 3 * 3, //_changeSong('newName'), //_incrementCounter,
           tooltip: 'Search',

@@ -1,6 +1,7 @@
 //import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:omusic/login.dart';
 //import 'dart:convert' show json;
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -36,6 +37,9 @@ class SignInState extends State<SignIn> {
       if (_currentUser != null) {
         //_handleGetContact(_currentUser!);
       }
+      Future.delayed(Duration.zero, () {
+        LoginWrapper.of(context).setToken(_currentUser?.displayName ?? '');
+      });
     });
     _googleSignIn.signInSilently();
   }
@@ -48,7 +52,10 @@ class SignInState extends State<SignIn> {
     }
   }
 
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
+  Future<void> _handleSignOut() {
+    LoginWrapper.of(context).removeToken();
+    return _googleSignIn.disconnect();
+  }
 
   // Widget _buildBody() {
 

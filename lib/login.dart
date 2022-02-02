@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:biometric_storage/biometric_storage.dart';
 import 'package:omusic/login_provider.dart';
+import 'package:http/http.dart' as http;
 //~ Init & logic
 
 retrieveKey() async {
@@ -74,11 +75,22 @@ class LoginWrapper extends StatefulWidget {
 
 class LoginWrapperState extends State<LoginWrapper> {
   String gToken = "";
+  late http.Client? gClient;
+  bool isConnected = false;
 
   void setToken(String token) {
     print("changing token : " + token);
     setState(() {
       gToken = token;
+      isConnected = true;
+    });
+  }
+
+  void setClient(http.Client client) {
+    print("changing client : " + client.toString());
+    setState(() {
+      gClient = client;
+      isConnected = true;
     });
   }
 
@@ -87,6 +99,16 @@ class LoginWrapperState extends State<LoginWrapper> {
     //todo remove token from secure box ?
     setState(() {
       gToken = "";
+      isConnected = false;
+    });
+  }
+
+  void removeClient() {
+    print("removing client from state");
+    //todo remove token from secure box ?
+    setState(() {
+      gClient = null;
+      isConnected = false;
     });
   }
 
@@ -129,7 +151,41 @@ class LoginWidget extends StatefulWidget {
 class _LoginWidgetState extends State<LoginWidget> {
   @override
   Widget build(BuildContext context) {
-    return const SignIn();
+    return Center(
+      // Center is a layout widget. It takes a single child and positions it
+      // in the middle of the parent.
+      child:
+          // SizedBox(
+          //   height: 700.0,
+          //child:
+          Column(
+        // Column is also a layout widget. It takes a list of children and
+        // arranges them vertically. By default, it sizes itself to fit its
+        // children horizontally, and tries to be as tall as its parent.
+        //
+        // Invoke "debug painting" (press "p" in the console, choose the
+        // "Toggle Debug Paint" action from the Flutter Inspector in Android
+        // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+        // to see the wireframe for each widget.
+        //
+        // Column has various properties to control how it sizes itself and
+        // how it positions its children. Here we use mainAxisAlignment to
+        // center the children vertically; the main axis here is the vertical
+        // axis because Columns are vertical (the cross axis would be
+        // horizontal).
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const <Widget>[
+          //Text(InheritedSongWrapper.of(context).name),
+          Expanded(child: SignIn()),
+          // Column(children: const <Widget>[]),
+          // ElevatedButton(
+          //     onPressed: () => InheritedSongWrapper.of(context)
+          //         .changeSongName("newName"),
+          //     child: const Text("Hello World"))
+          //  style: Theme.of(context).textTheme.headline4,
+        ],
+      ),
+    );
   }
 
   onPressed() {
