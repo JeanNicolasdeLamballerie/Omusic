@@ -16,7 +16,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 
-signInSilently(context, currentUser) async {
+void signInSilently(context, currentUser) async {
   await _googleSignIn.signInSilently();
   final http.Client? client = await _googleSignIn.authenticatedClient();
   Future.delayed(Duration.zero, () {
@@ -27,7 +27,6 @@ signInSilently(context, currentUser) async {
       print("ERROR /!\\ : CLIENT IS NULL");
     }
   });
-  return client;
 }
 
 class SignIn extends StatefulWidget {
