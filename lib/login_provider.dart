@@ -1,7 +1,9 @@
-//import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:omusic/login.dart';
+import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 //import 'dart:convert' show json;
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -14,6 +16,20 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
     'https://www.googleapis.com/auth/drive.appdata',
   ],
 );
+
+signInSilently(context, currentUser) async {
+  await _googleSignIn.signInSilently();
+  final http.Client? client = await _googleSignIn.authenticatedClient();
+  Future.delayed(Duration.zero, () {
+    LoginWrapper.of(context).setToken(currentUser?.displayName ?? '');
+    if (client != null) {
+      LoginWrapper.of(context).setClient(client);
+    } else {
+      print("ERROR /!\\ : CLIENT IS NULL");
+    }
+  });
+  return client;
+}
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -37,11 +53,8 @@ class SignInState extends State<SignIn> {
       if (_currentUser != null) {
         //_handleGetContact(_currentUser!);
       }
-      Future.delayed(Duration.zero, () {
-        LoginWrapper.of(context).setToken(_currentUser?.displayName ?? '');
-      });
+      signInSilently(context, _currentUser);
     });
-    _googleSignIn.signInSilently();
   }
 
   Future<void> _handleSignIn() async {

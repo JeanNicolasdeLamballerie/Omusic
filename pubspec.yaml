@@ -31,6 +31,7 @@ dependencies:
   just_audio_libwinmedia: any # substitute version number
   hive: ^2.0.4
   hive_flutter: ^1.1.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.4
   
   flutter:
     sdk: flutter
