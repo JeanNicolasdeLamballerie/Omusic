@@ -21,6 +21,7 @@ void signInSilently(context, currentUser) async {
   final http.Client? client = await _googleSignIn.authenticatedClient();
   Future.delayed(Duration.zero, () {
     LoginWrapper.of(context).setToken(currentUser?.displayName ?? '');
+    LoginWrapper.of(context).setUser(currentUser);
     if (client != null) {
       LoginWrapper.of(context).setClient(client);
     } else {
@@ -44,14 +45,24 @@ class SignInState extends State<SignIn> {
   void initState() {
     super.initState();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      setState(() {
-        _currentUser = account;
-        print(account);
-      });
-      if (_currentUser != null) {
-        //_handleGetContact(_currentUser!);
+      print("GOING THROUGH LISTENER");
+      print(mounted);
+
+      if (mounted) {
+        print("LISTENER 1");
+
+        setState(() {
+          _currentUser = account;
+          print(account);
+        });
+        signInSilently(context, _currentUser);
       }
-      signInSilently(context, _currentUser);
+      // if (_currentUser != null) {
+      //   //_handleGetContact(_currentUser!);
+      // }
+      print("LISTENER 2");
+
+      print("LISTENER OVER");
     });
   }
 
@@ -114,5 +125,47 @@ class SignInState extends State<SignIn> {
         ],
       );
     }
+  }
+}
+
+class UserBar extends StatelessWidget {
+  final GoogleSignInAccount user;
+  final String title;
+  final TextStyle? style;
+  const UserBar({Key? key, required this.user, required this.title, this.style})
+      : super(key: key);
+
+  @override
+  build(context) {
+    Future<void> _handleSignOut() {
+      LoginWrapper.of(context).removeToken();
+      LoginWrapper.of(context).removeUser();
+      LoginWrapper.of(context).removeClient();
+      return _googleSignIn.disconnect();
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Expanded(
+          flex: 4,
+          child: ListTile(
+            leading: GoogleUserCircleAvatar(
+              identity: user,
+            ),
+            title: Text((user.displayName ?? '') + ' > ' + title, style: style),
+            subtitle: Text(user.email, style: style),
+            trailing: ElevatedButton(
+              child: const Text('SIGN OUT'),
+              onPressed: _handleSignOut,
+            ),
+          ),
+        ),
+        // const Expanded(
+        //   flex: 6,
+        //   child: Text("Signed in successfully."),
+        // ),
+      ],
+    );
   }
 }

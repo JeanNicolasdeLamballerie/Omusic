@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:omusic/login.dart';
 import 'package:omusic/frog.dart';
+import 'package:omusic/login_provider.dart';
 
 class RoutingAppBar extends StatefulWidget {
   final Widget child;
@@ -17,12 +18,20 @@ class RoutingAppBarState extends State<RoutingAppBar> {
     return InheritedSongWrapper(
       child: Scaffold(
         appBar: AppBar(
+          flexibleSpace: UserBar(
+              title: widget.current,
+              user: LoginWrapper.of(context).getUser(),
+              style: Theme.of(context).appBarTheme.titleTextStyle),
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
-          title: Text(widget.current,
-              style: Theme.of(context).appBarTheme.titleTextStyle),
         ),
-        body: widget.child,
+        body: // Column(
+            //   children: [
+            //UserBar(user: LoginWrapper.of(context).getUser()),
+            widget.child
+        // ],
+        //)
+        ,
         floatingActionButton: FloatingActionButton(
           onPressed: () => 3 * 3, //_changeSong('newName'), //_incrementCounter,
           tooltip: 'Search',

@@ -77,7 +77,7 @@ class LoginWrapperState extends State<LoginWrapper> {
   String gToken = "";
   late http.Client? gClient;
   bool isConnected = false;
-
+  var _user;
   void setToken(String token) {
     print("changing token : " + token);
     setState(() {
@@ -103,9 +103,27 @@ class LoginWrapperState extends State<LoginWrapper> {
     });
   }
 
+  void setUser(user) {
+    print("changing user : " + user.toString());
+    setState(() {
+      _user = user;
+    });
+  }
+
+  void removeUser() {
+    print("removing user from state");
+    setState(() {
+      _user = null;
+    });
+  }
+
+  getUser() {
+    return _user;
+  }
+
   void removeClient() {
     print("removing client from state");
-    //todo remove token from secure box ?
+    //todo remove client from secure box ?
     setState(() {
       gClient = null;
       isConnected = false;
