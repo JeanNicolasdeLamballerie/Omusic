@@ -22,6 +22,10 @@ class DriveAPI {
     }
   }
 
+  getData() {
+    return {api.about, api.changes, api.files};
+  }
+
   DriveApi changeAPIuser(http.Client newClient) {
     api = DriveApi(newClient);
     return api;

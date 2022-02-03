@@ -33,9 +33,8 @@ class HomeControllerState extends State<HomeController> {
     if (isConnected) {
       var client = loginState.gClient;
       var api = DriveAPI(client: client);
-      var drive = api.initAPI();
-      return RoutingAppBar(
-          current: "Library", child: LibraryView(drive: drive));
+      api.initAPI();
+      return RoutingAppBar(current: "Library", child: LibraryView(api: api));
     } else {
       return Scaffold(
         appBar: AppBar(
