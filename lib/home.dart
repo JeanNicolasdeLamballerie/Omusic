@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:omusic/login.dart';
 import 'package:omusic/components/appbar.dart';
+import 'package:omusic/components/library.dart';
+import 'package:omusic/components/drive_api.dart';
 
 class HomeController extends StatefulWidget {
   final String titleHome = "Home Page";
@@ -29,7 +31,10 @@ class HomeControllerState extends State<HomeController> {
       setLoginState(loginState.isConnected);
     }
     if (isConnected) {
-      return const RoutingAppBar(current: "", child: Text("hello"));
+      var client = loginState.gClient;
+      var api = DriveAPI(client: client);
+      var drive = api.initAPI();
+      return RoutingAppBar(current: "", child: LibraryView(drive: drive));
     } else {
       return Scaffold(
         appBar: AppBar(
