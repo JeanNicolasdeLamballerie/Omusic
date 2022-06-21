@@ -19,11 +19,34 @@ class InheritedSongWrapper extends StatefulWidget {
 
 class InheritedSongWrapperState extends State<InheritedSongWrapper> {
   String name = "No song selected";
+  String parentName = "---";
+  String id = "";
+  String mediaLink = "";
+  void changeParentName(String? newName) {
+    print("changing parent name : " + (newName ?? "---"));
+    setState(() {
+      parentName = newName ?? "---";
+    });
+  }
 
   void changeSongName(String newName) {
     print("changing name : " + newName);
     setState(() {
       name = newName;
+    });
+  }
+
+  void changeSongId(String newId) {
+    print("changing id : " + newId);
+    setState(() {
+      id = newId;
+    });
+  }
+
+  void changeSongLink(String link) {
+    print("changing link : " + link);
+    setState(() {
+      mediaLink = link;
     });
   }
 

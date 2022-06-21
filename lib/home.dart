@@ -3,6 +3,8 @@ import 'package:omusic/login.dart';
 import 'package:omusic/components/appbar.dart';
 import 'package:omusic/components/library.dart';
 import 'package:omusic/components/drive_api.dart';
+import 'package:omusic/components/player.dart';
+import 'package:audio_service/audio_service.dart';
 
 class HomeController extends StatefulWidget {
   final String titleHome = "Home Page";
@@ -14,6 +16,7 @@ class HomeController extends StatefulWidget {
 
 class HomeControllerState extends State<HomeController> {
   bool isConnected = false;
+  late AudioPlayerHandler handler;
   dynamic loginState;
 
   void setLoginState(bool connected) {
@@ -23,8 +26,17 @@ class HomeControllerState extends State<HomeController> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getHandler() async {
+      handler = await AudioService.init(builder: () => AudioPlayerHandler());
+    }
+
+    getHandler();
+  }
+
+  @override
   build(context) {
-    print('getting login state');
     loginState = LoginWrapper.of(context);
     print(loginState);
     if (loginState.isConnected == !isConnected) {
@@ -34,7 +46,11 @@ class HomeControllerState extends State<HomeController> {
       var client = loginState.gClient;
       var api = DriveAPI(client: client);
       api.initAPI();
-      return RoutingAppBar(current: "Library", child: LibraryView(api: api));
+      return RoutingAppBar(
+          current: "Library",
+          child: LibraryView(api: api, handler: handler),
+          api: api,
+          handler: handler);
     } else {
       return Scaffold(
         appBar: AppBar(

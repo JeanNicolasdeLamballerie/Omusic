@@ -2,12 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:omusic/login.dart';
 import 'package:omusic/frog.dart';
 import 'package:omusic/login_provider.dart';
+import 'package:omusic/components/player.dart';
+import 'package:omusic/components/drive_api.dart';
 
 class RoutingAppBar extends StatefulWidget {
   final Widget child;
-  const RoutingAppBar({Key? key, required this.current, required this.child})
-      : super(key: key);
   final String current;
+  final DriveAPI api;
+  final AudioPlayerHandler handler;
+  const RoutingAppBar(
+      {Key? key,
+      required this.current,
+      required this.child,
+      required this.api,
+      required this.handler})
+      : super(key: key);
   @override
   RoutingAppBarState createState() => RoutingAppBarState();
 }
@@ -17,6 +26,10 @@ class RoutingAppBarState extends State<RoutingAppBar> {
   Widget build(BuildContext context) {
     return InheritedSongWrapper(
       child: Scaffold(
+        bottomNavigationBar: SizedBox(
+            height: 120,
+            width: 200,
+            child: Player(api: widget.api, handler: widget.handler)),
         appBar: AppBar(
           flexibleSpace: UserBar(
               title: widget.current,
