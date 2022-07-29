@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:omusic/components/player.dart';
 
+//& UTIL : Checks for audio compatibility & returns values from the file description
 class Getter {
   final ga.File element;
   final List<String> extensions = <String>[
@@ -40,6 +41,7 @@ class Getter {
         element.name!.toLowerCase().contains(extension.toLowerCase()));
   }
 
+//& UTIL : splits List into a List<List>
   static List<List<Audio>> partition(List<Audio> arr, int size) {
     var len = arr.length;
     List<List<Audio>> chunks = [];
@@ -51,6 +53,7 @@ class Getter {
     return chunks;
   }
 
+//& UTIL : splits List<List> into a List<List<List>>
   static List<List<List<Audio>>> partitionToPage(
       List<List<Audio>> arr, int size) {
     var len = arr.length;
@@ -64,6 +67,7 @@ class Getter {
   }
 }
 
+//& Defines an audio item
 class Audio {
   final String extension;
   final String name;
@@ -72,6 +76,8 @@ class Audio {
   final List<String> parents;
   Audio(this.name, this.id, this.link, this.parents, this.extension);
 }
+
+//! Defines a view for the Library
 
 class LibraryView extends StatefulWidget {
   final DriveAPI api;
@@ -114,18 +120,48 @@ class LibraryState extends State<LibraryView> {
   Widget build(context) {
     checkFiles() async {
       var api = widget.api.getAPI();
+      try {
+        var partiallyDownloadedFile = await api.files.get(
+            "1mhBkXgwZj7sle-h2YQulDPa0HPClXeYz",
+            // element.id!,
+            // downloadOptions: const ga.DownloadOptions()
+            downloadOptions: ga.PartialDownloadOptions(ga.ByteRange(0, 10)));
+        print("partial download");
+        print(partiallyDownloadedFile);
+        return;
+      } catch (err) {
+        print('Error occured : ');
+        print(err);
+        return;
+      }
+      ;
       var files = await api.files.list($fields: '*');
       files.files?.forEach((element) {
+        if (element.mimeType!.contains('video')) {
+          print("IDDDDD");
+          print(element.id);
+        }
         Getter fetchedFile = Getter(element);
         if (fetchedFile.isAudio()) {
+          print("ID : ");
+          print(element.mimeType);
+          print(element.id!);
+
+          // Future.value(a).then((e) {
+          //   print("Partial dl");
+          //   print(e);
+          // });
+
+          // var f =
+          //     await api.files.get(fetchedFile.element.id!, $fields: 'Range:10');
+          // print(f);
           String name = fetchedFile.getName();
           String id = fetchedFile.getId();
           String link = fetchedFile.getLink();
           List<String> parents = fetchedFile.getParent();
           String extension = name.split('.').last;
-          name.replaceAll(extension, '');
+          name = name.replaceAll(".$extension", '');
           audioFilesNames.add(Audio(name, id, link, parents, extension));
-
           if (element.parents != null) {
             //todo check for values ? => Set directories
           }
@@ -145,22 +181,17 @@ class LibraryState extends State<LibraryView> {
           }
         }
       }
-      print(parentsFiles);
-      print("Hello world!");
-      var values = await Future.wait(parentsFiles.values);
-      print(values.toString());
-
-      print("VALUES");
+      print("error?");
+      List<dynamic> values = await Future.wait(parentsFiles.values);
+      print(" no error?");
       for (int i = 0; i < values.length; i++) {
-        print(values[i].name);
-        print(parentsFiles.keys.elementAt(i));
-        finalMap[parentsFiles.keys.elementAt(i)] = values[i].name ?? "";
+        finalMap[parentsFiles.keys.elementAt(i)] = values[i].name;
       }
       setLoading(false);
-      print(finalMap.toString());
       print('Loading finished');
     }
 
+    //~ Start the fetching of the audio files descriptions
     if (loading) {
       try {
         checkFiles();
@@ -170,14 +201,17 @@ class LibraryState extends State<LibraryView> {
     }
 
     return LayoutBuilder(builder: (context, constraints) {
+      //~ Get the constraints & layout of the current screen
       var parentHeight = constraints.maxHeight;
       var parentWidth = constraints.maxWidth;
 
       if (loading) {
+        //! Visual values if loader is apparent
         const padding = 40.0;
         const totalPadding = padding * 2;
         const size = 50;
         const totalSize = size + totalPadding;
+        //! Loader element
         var square = const Padding(
           padding: EdgeInsets.all(padding),
           child: SpinKitFoldingCube(
@@ -185,10 +219,13 @@ class LibraryState extends State<LibraryView> {
             size: 50.0,
           ),
         );
+
+        //! Determining the amount of loaders to display
         var numberInRow = ((parentWidth / 1.5) / (totalSize)).floor();
         var numberOfRows = ((parentHeight / 1.5) / (totalSize)).floor();
         debugPrint(
             'Max height: $parentHeight, max width: $parentWidth, max number :  $numberInRow, max rows : $numberOfRows');
+        //! Finally, create array of widgets
         var widgets = List.filled(
             numberOfRows,
             Row(
@@ -197,12 +234,21 @@ class LibraryState extends State<LibraryView> {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            //! Iterate over the previously created widgets and display them
             children: widgets.map((row) {
               return Container(child: row);
             }).toList(),
           ),
         );
-      } else {
+      }
+
+      //? ----------------------------------------------------------------------------------------------
+      else // Display the library because the loading is finished.                                //? --
+      //? ----------------------------------------------------------------------------------------------
+
+      {
+        //! Visual values if library cards are apparent
+
         const padding = 40.0;
         const totalPadding = padding * 2;
         const sizeHorizontal = 150.0;
@@ -211,38 +257,48 @@ class LibraryState extends State<LibraryView> {
         const totalSizeHorizontal = sizeHorizontal + totalPadding;
         const totalSizeVertical = sizeVertical + totalPadding;
 
-        var numberInRow = ((parentWidth / 1.5) / (totalSizeHorizontal)).floor();
+        //! Determining the amount of cards to display
 
+        var numberInRow = ((parentWidth / 1.5) / (totalSizeHorizontal)).floor();
         var numberOfRows = ((parentHeight / 1.2) / (totalSizeVertical)).floor();
+
+        //! Making sure our build still display at least one row & element to avoid errors
+
         if (numberOfRows < 1) {
           numberOfRows = 1;
         }
         if (numberInRow < 1) {
           numberInRow = 1;
         }
+
+        //! Partitioning the audio files into lists corresponding to rows
+
         var lists = Getter.partition(audioFilesNames, numberInRow);
+
+        //! Partitioning the list of rows into lists corresponding to pages
 
         List<List<List<Audio>>> allLists =
             Getter.partitionToPage(lists, numberOfRows);
-        // Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: audioFilesNames
-        //         .map((audioFile) => Text(audioFile.name))
-        //         .toList());
-        if (currentPage > allLists.length - 1) {
-          setCurrentPage(allLists.length - 1, allLists.length - 1);
-        }
 
+        //! Making sure that changing the screen size dynamically doesn't send us to a non-existent index
+        var maxIndex = allLists.length - 1;
+        if (currentPage > maxIndex) {
+          setCurrentPage(maxIndex, maxIndex);
+        }
+        //! Booleans used to determine if the buttons should be greyed out
         bool isFirstPage = currentPage == 0;
-        bool isLastPage = currentPage == allLists.length - 1;
+        bool isLastPage = currentPage == maxIndex;
+
+        //! Previous & next page
         goNext() {
-          setCurrentPage(1, allLists.length - 1);
+          setCurrentPage(1, maxIndex);
         }
 
         goPrevious() {
-          setCurrentPage(-1, allLists.length - 1);
+          setCurrentPage(-1, maxIndex);
         }
 
+        //? Start rendering
         return Center(
             child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -279,9 +335,18 @@ class LibraryState extends State<LibraryView> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: allLists[currentPage].map((row) {
+                MainAxisAlignment alignment = MainAxisAlignment.center;
+                if (isLastPage) {
+                  //& check if we are in the last row
+                  List<Audio> lastRow = allLists[currentPage]
+                      .elementAt(allLists[currentPage].length - 1);
+                  if (row == lastRow) {
+                    alignment = MainAxisAlignment.start;
+                  }
+                }
                 return Row(
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: alignment,
                     children: row
                         .map((Audio audio) => Expanded(
                             child: CardView(

@@ -54,8 +54,6 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Omusic : Listen anywhere'),
       routes: <String, WidgetBuilder>{
         '/library': (BuildContext context) {
-          print("see context here : ");
-          print(context);
           return const Library(name: 'My Library', playlists: {}, artists: {});
         }
         // '/b': (BuildContext context) => MyPage(title: 'page B'),

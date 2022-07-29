@@ -48,9 +48,9 @@ class HomeControllerState extends State<HomeController> {
       api.initAPI();
       return RoutingAppBar(
           current: "Library",
-          child: LibraryView(api: api, handler: handler),
           api: api,
-          handler: handler);
+          handler: handler,
+          child: LibraryView(api: api, handler: handler));
     } else {
       return Scaffold(
         appBar: AppBar(

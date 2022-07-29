@@ -8,8 +8,12 @@ class DriveAPI {
 
   DriveAPI({required this.client}) : super();
 
-  DriveApi initAPI() {
+  DriveApi initAPI({http.Client? replacementClient}) {
     initialized = true;
+    if (replacementClient != null) {
+      api = DriveApi(replacementClient);
+      return api;
+    }
     api = DriveApi(client);
     return api;
   }

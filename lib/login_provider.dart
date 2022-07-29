@@ -16,6 +16,21 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 
+// class FetchingClient extends http.BaseClient {
+//   final http.Client _httpClient;
+//   final Map<String, String> partialDownloadHeaders = {
+//     'Range': '1-10/'
+//     // other headers
+//   };
+//   FetchingClient(this._httpClient);
+
+//   @override
+//   Future<http.StreamedResponse> send(http.BaseRequest request) {
+//     request.headers.addAll(partialDownloadHeaders);
+//     return _httpClient.send(request);
+//   }
+// }
+
 void signInSilently(context, currentUser) async {
   await _googleSignIn.signInSilently();
   final http.Client? client = await _googleSignIn.authenticatedClient();
@@ -45,12 +60,9 @@ class SignInState extends State<SignIn> {
   void initState() {
     super.initState();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      print("GOING THROUGH LISTENER");
       print(mounted);
 
       if (mounted) {
-        print("LISTENER 1");
-
         setState(() {
           _currentUser = account;
           print(account);
@@ -60,9 +72,6 @@ class SignInState extends State<SignIn> {
       // if (_currentUser != null) {
       //   //_handleGetContact(_currentUser!);
       // }
-      print("LISTENER 2");
-
-      print("LISTENER OVER");
     });
   }
 
@@ -86,7 +95,6 @@ class SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     GoogleSignInAccount? user = _currentUser;
-    print(user.toString());
 
     if (user != null) {
       return Column(

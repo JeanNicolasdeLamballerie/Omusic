@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:omusic/frog.dart';
 import 'package:omusic/components/player.dart';
+// import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 
 class CardView extends StatefulWidget {
   final String name;
@@ -53,7 +54,7 @@ class CardState extends State<CardView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 TextButton(
-                  child: const Text('BUY TICKETS'),
+                  child: const Text('ADD TO PLAYLIST'),
                   onPressed: () {/* ... */},
                 ),
                 const SizedBox(width: 8),
@@ -62,6 +63,8 @@ class CardState extends State<CardView> {
                   onPressed: () {
                     InheritedSongWrapperState wrapper =
                         InheritedSongWrapper.of(context);
+                    // var retriever = MetadataRetriever();
+                    // await retriever.setUri()
                     widget.handler.setLink(widget.link);
                     wrapper.changeParentName(parentName);
                     wrapper.changeSongName(widget.name);

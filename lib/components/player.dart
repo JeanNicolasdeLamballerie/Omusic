@@ -103,7 +103,6 @@ class _PlayerState extends State<Player> {
     } else {
       // 5
 
-      print(widget.handler.queue.toString());
       return IconButton(
         icon: const Icon(Icons.replay),
         iconSize: size,

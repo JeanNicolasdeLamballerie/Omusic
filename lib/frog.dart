@@ -23,28 +23,28 @@ class InheritedSongWrapperState extends State<InheritedSongWrapper> {
   String id = "";
   String mediaLink = "";
   void changeParentName(String? newName) {
-    print("changing parent name : " + (newName ?? "---"));
+    debugPrint("changing parent name : " + (newName ?? "---"));
     setState(() {
       parentName = newName ?? "---";
     });
   }
 
   void changeSongName(String newName) {
-    print("changing name : " + newName);
+    debugPrint("changing name : " + newName);
     setState(() {
       name = newName;
     });
   }
 
   void changeSongId(String newId) {
-    print("changing id : " + newId);
+    debugPrint("changing id : " + newId);
     setState(() {
       id = newId;
     });
   }
 
   void changeSongLink(String link) {
-    print("changing link : " + link);
+    debugPrint("changing link : " + link);
     setState(() {
       mediaLink = link;
     });
