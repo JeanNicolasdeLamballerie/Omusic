@@ -77,7 +77,7 @@ class SignInState extends State<SignIn> {
 
   Future<void> _handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      var c = await _googleSignIn.signIn();
     } catch (error) {
       print(error);
     }
