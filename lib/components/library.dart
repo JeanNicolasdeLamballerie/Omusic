@@ -1,11 +1,44 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
+import 'package:http/http.dart';
 import 'package:omusic/components/drive_api.dart';
 import 'package:omusic/components/card.dart';
 //import 'package:loading_animations/loading_animations.dart';
+// import 'package:_discoveryapis_commons/_discoveryapis_commons.dart' as commons;
+
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:audio_service/audio_service.dart';
+// import 'package:audio_service/audio_service.dart';
 import 'package:omusic/components/player.dart';
+
+class ListReader {
+  final Uint8List byteList;
+  int position = 0;
+  int defaultLength = 1;
+  ListReader(
+      {required this.byteList, this.position = 0, this.defaultLength = 1});
+  int advanceSingle() {
+    position += 1;
+    return byteList[position - 1];
+  }
+
+  Uint8List advanceTwice() {
+    position += 2;
+    return byteList.sublist(position - 2, position);
+  }
+
+  Uint8List advanceReaderList(int? range) {
+    range ??= defaultLength;
+    position += range;
+    return byteList.sublist(position - range, position);
+  }
+
+  advanceReaderString(int? range) {
+    return String.fromCharCodes(advanceReaderList(range));
+  }
+}
 
 //& UTIL : Checks for audio compatibility & returns values from the file description
 class Getter {
@@ -90,10 +123,17 @@ class LibraryView extends StatefulWidget {
 
 class LibraryState extends State<LibraryView> {
   bool loading = true;
+  String txt = "test";
   late AudioPlayerHandler handler;
   int currentPage = 0;
   List<Audio> audioFilesNames = [];
   Map<String, String> finalMap = {};
+//test
+  void setTXT(t) {
+    setState(() {
+      txt = t;
+    });
+  }
 
   void setCurrentPage(int nb, int max) {
     if (currentPage + nb < 0 || currentPage + nb > max) {
@@ -120,32 +160,144 @@ class LibraryState extends State<LibraryView> {
   Widget build(context) {
     checkFiles() async {
       var api = widget.api.getAPI();
-      try {
-        var partiallyDownloadedFile = await api.files.get(
-            "1mhBkXgwZj7sle-h2YQulDPa0HPClXeYz",
-            // element.id!,
-            // downloadOptions: const ga.DownloadOptions()
-            downloadOptions: ga.PartialDownloadOptions(ga.ByteRange(0, 10)));
-        print("partial download");
-        print(partiallyDownloadedFile);
-        return;
-      } catch (err) {
-        print('Error occured : ');
-        print(err);
-        return;
-      }
+      // try {
+
+      // } catch (err) {
+      //   print('Error occured : ');
+      //   print(err);
+      //   return;
+      // }
       ;
       var files = await api.files.list($fields: '*');
-      files.files?.forEach((element) {
-        if (element.mimeType!.contains('video')) {
-          print("IDDDDD");
-          print(element.id);
-        }
+      files.files?.forEach((element) async {
         Getter fetchedFile = Getter(element);
-        if (fetchedFile.isAudio()) {
+        if (element.name!.contains("TEST")) {
+          print(element.name);
+        }
+        if (fetchedFile.isAudio() && element.name == "TESTFILE.wav") {
           print("ID : ");
-          print(element.mimeType);
+          // print(element.mimeType);
           print(element.id!);
+          print(element.name!);
+
+          //Todo BUG REPORT : Doesn't seem to be able to request the last byte
+          var l = int.parse(element.size ?? "-1");
+          if (l != -1) {
+            l = l - 1;
+          }
+          ga.Media partiallyDownloadedFile = await api.files.get(
+                  // "1mhBkXgwZj7sle-h2YQulDPa0HPClXeYz",
+                  element.id!,
+                  // downloadOptions: const ga.DownloadOptions()
+                  downloadOptions:
+                      ga.PartialDownloadOptions(ga.ByteRange(42305206, l)))
+              //!ga.PartialDownloadOptions(ga.ByteRange(0, 60000)))
+              //!as ga.Media;
+              as ga.Media;
+          print("partial download");
+          // print(partiallyDownloadedFile.length);
+          //! print(partiallyDownloadedFile.contentType);
+          //!ByteStream str = partiallyDownloadedFile.stream as ByteStream;
+          ByteStream str = partiallyDownloadedFile.stream as ByteStream;
+
+          var riff = await str.toBytes();
+          print(riff.length);
+          print("length"); // 44 038 726 // 42 305 206
+          ListReader reader = ListReader(byteList: riff, position: 12);
+          var b = riff.sublist(0, 4);
+          var c = riff.sublist(4, 8);
+          var d = riff.sublist(8, 12);
+          int getInt32Reader() => reader
+              .advanceReaderList(4)
+              .buffer
+              .asByteData()
+              .getInt32(0, Endian.little);
+          print(c.buffer.asByteData().getInt32(0, Endian.little)); //filesize
+          print(String.fromCharCodes(b));
+          print("8-12${String.fromCharCodes(d)}");
+          print(reader.position);
+          print(reader.advanceReaderString(4));
+          print(reader.position);
+          print(getInt32Reader());
+          print(reader.position);
+          print(reader.advanceTwice());
+          print(reader.position);
+          print(reader.advanceTwice());
+          print(reader.position);
+          print(getInt32Reader());
+          print(reader.position);
+          print(getInt32Reader());
+          print(reader.position);
+          print(reader.advanceTwice());
+          print(reader.position);
+          print(reader.advanceTwice());
+          print(reader.position);
+          print(reader.advanceReaderString(4));
+          print("here");
+
+          print(reader.position);
+          print(getInt32Reader());
+          print(reader.position);
+          try {
+            var edf = utf8.decode(riff, allowMalformed: true);
+            print("yo");
+            print(edf.contains("info"));
+            print(edf.contains("this is the artist !"));
+            if (txt == "test") {
+              var ai = (edf.indexOf("ID3") - 1500);
+
+              setTXT("START ($ai ) ---- ${edf.substring(ai)}----- END");
+            }
+            print(edf.length);
+          } catch (err) {
+            print("err !");
+            print(err);
+          }
+          print(reader.advanceReaderList(4));
+          print(reader.advanceReaderList(4));
+          print(reader.advanceReaderList(4));
+          print(reader.advanceReaderList(4));
+          print(reader.advanceReaderList(4));
+          int i = 0;
+          bool found = false;
+          int firstIndex = -1;
+          while (i < 300000) {
+            i++;
+            var r = reader.advanceReaderList(4);
+
+            if (r.toString() != [0, 0, 0, 0].toString()) {
+              if (!found) {
+                firstIndex = reader.position;
+                print("different !");
+                print(r);
+                print(i);
+                print(firstIndex);
+              }
+              found = true;
+              if (found && i > firstIndex + 15) {
+                break;
+              }
+            }
+            if (found && i > firstIndex + 15) {
+              break;
+            }
+          }
+          print(firstIndex);
+          print(reader.byteList.sublist(firstIndex, firstIndex + 4));
+          print(String.fromCharCodes(
+              reader.byteList.sublist(firstIndex, firstIndex + 4)));
+          print(i);
+          print("done");
+
+          // str.join("");
+          // print(await str.join(','));
+          try {
+            //var vl = await str.bytesToString();
+            //   print(vl);
+          } catch (err) {
+            // print(err);
+          }
+          return;
 
           // Future.value(a).then((e) {
           //   print("Partial dl");
@@ -169,6 +321,7 @@ class LibraryState extends State<LibraryView> {
           return;
         }
       });
+      return;
       Map<String, Future> parentsFiles = {};
       audioFilesNames.sort((a, b) {
         return a.name.toLowerCase().compareTo(b.name.toLowerCase());
@@ -197,6 +350,7 @@ class LibraryState extends State<LibraryView> {
         checkFiles();
       } catch (err) {
         print(err);
+        print("edf");
       }
     }
 
@@ -235,9 +389,12 @@ class LibraryState extends State<LibraryView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             //! Iterate over the previously created widgets and display them
-            children: widgets.map((row) {
-              return Container(child: row);
-            }).toList(),
+            children: [
+              Container(child: SingleChildScrollView(child: Text(txt)))
+            ],
+            //& children: widgets.map((row) {
+            //   return Container(child: row);
+            // }).toList(),
           ),
         );
       }
@@ -316,10 +473,7 @@ class LibraryState extends State<LibraryView> {
                           ? Colors.grey
                           : Theme.of(context).primaryColor),
                 ),
-                Text("Current page : " +
-                    (currentPage + 1).toString() +
-                    "/" +
-                    allLists.length.toString()),
+                Text("Current page : ${currentPage + 1}/${allLists.length}"),
                 IconButton(
                   disabledColor: Colors.grey,
                   splashRadius: 25,

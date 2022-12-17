@@ -3,6 +3,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:omusic/login.dart';
+import 'package:googleapis/drive/v3.dart' as ga;
+import 'package:googleapis_auth/googleapis_auth.dart' as gapis;
+
 //import 'dart:convert' show json;
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -33,11 +36,11 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 
 void signInSilently(context, currentUser) async {
   await _googleSignIn.signInSilently();
-  final http.Client? client = await _googleSignIn.authenticatedClient();
+  final gapis.AuthClient? client = await _googleSignIn.authenticatedClient();
   Future.delayed(Duration.zero, () {
-    LoginWrapper.of(context).setToken(currentUser?.displayName ?? '');
-    LoginWrapper.of(context).setUser(currentUser);
     if (client != null) {
+      LoginWrapper.of(context).setUser(currentUser);
+      LoginWrapper.of(context).setToken(currentUser?.displayName ?? '');
       LoginWrapper.of(context).setClient(client);
     } else {
       print("ERROR /!\\ : CLIENT IS NULL");
@@ -109,8 +112,8 @@ class SignInState extends State<SignIn> {
               title: Text(user.displayName ?? ''),
               subtitle: Text(user.email),
               trailing: ElevatedButton(
-                child: const Text('SIGN OUT'),
                 onPressed: _handleSignOut,
+                child: const Text('SIGN OUT'),
               ),
             ),
           ),
