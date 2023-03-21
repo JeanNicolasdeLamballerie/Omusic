@@ -50,7 +50,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   path_provider: ^2.0.10
   audio_service: ^0.18.4
-  dio: ^4.0.6
+  dio: ^5.0.3
 
 # dependency_overrides:
 #   _discoveryapis_commons:
